@@ -1,26 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {TaskContextProvider} from './contexts/taskContext'
+import {ErrorContextProvider} from './contexts/errorContext';
+import TaskEditComponent from './components/taskEditComponent';
+import TasksListComponent from './components/tasksListComponent';
+import ErrorAlert from './components/errorAlert';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <ErrorContextProvider>
+                <TaskContextProvider>
+                    <ErrorAlert/>
+                    <TaskEditComponent/>
+                    <TasksListComponent/>
+                </TaskContextProvider>
+            </ErrorContextProvider>
+        </div>
+    );
 }
 
 export default App;
