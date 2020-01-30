@@ -1,7 +1,8 @@
 import React from 'react';
 import TaskCountdownTimerComponent from './taskCountdownTimerComponent';
 
-const TaskItemComponent = ({task: {title, text, deadline}}) => {
+const TaskItemComponent = ({task: {title, text, date, time}}) => {
+    const deadline = `${date} ${time}`;
     const expired = (new Date() > new Date(deadline));
 
     return (

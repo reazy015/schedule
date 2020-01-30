@@ -1,15 +1,21 @@
-import React, { createContext, useState } from 'react';
+import React, {createContext, useEffect, useState} from 'react';
+import {saveToStorage, getFromStorage} from '../utils/localStorageActions';
+
 const TaskContext = createContext();
 
 const TaskContextProvider = (props) => {
-    const [tasks, setTasks] = useState([
-        { title: 'task title', text: 'lorem ipsum', deadline: new Date('31 January 2020') },
-        { title: 'task title test', text: 'lorem ipsum test', deadline: new Date('30 January 2020') }
-    ]);
+    const initialState = JSON.parse(getFromStorage('tasks'));
+    const [tasks, setTasks] = useState(initialState ? initialState : []);
 
     const addNewTask = (newTask) => {
         setTasks([...tasks, newTask]);
-    }
+        saveToStorage('tasks', tasks);
+    };
+
+    useEffect(() => {
+        console.log(tasks);
+        saveToStorage('tasks', tasks);
+    }, [tasks]);
 
     return (
         <TaskContext.Provider value={[tasks, addNewTask]}>

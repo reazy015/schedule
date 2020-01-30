@@ -18,7 +18,7 @@ const ErrorContextProvider = (props) => {
             setError(errors => errors.filter(error => error.id !== id));
         }, 3000)
     };
-    console.log(errors);
+
     return (
         <ErrorContext.Provider value={[errors, addError]}>
             {props.children}

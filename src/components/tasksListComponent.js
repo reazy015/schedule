@@ -4,10 +4,10 @@ import TaskItemComponent from './taskItemComponent';
 
 const TasksListComponent = () => {
     const [tasks] = useContext(TaskContext);
-    console.log(tasks);
+
     return (
         <div>
-            {tasks.map(task => (<TaskItemComponent key={task.deadline} task={task} />))}
+            {tasks.map(task => (<TaskItemComponent key={task.id} task={task} />))}
         </div>
     );
 };
