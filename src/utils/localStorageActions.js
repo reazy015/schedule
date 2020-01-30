@@ -6,4 +6,8 @@ const getFromStorage = (cellName) => {
     return localStorage.getItem(cellName);
 };
 
+const removeFromStorage = (id) => {
+
+};
+
 export {saveToStorage, getFromStorage};

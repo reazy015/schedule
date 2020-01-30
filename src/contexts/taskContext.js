@@ -12,13 +12,16 @@ const TaskContextProvider = (props) => {
         saveToStorage('tasks', tasks);
     };
 
+    const removeTask = (id) => {
+        setTasks(tasks => tasks.filter(task => task.id !== id));
+    };
+
     useEffect(() => {
-        console.log(tasks);
         saveToStorage('tasks', tasks);
     }, [tasks]);
 
     return (
-        <TaskContext.Provider value={[tasks, addNewTask]}>
+        <TaskContext.Provider value={[tasks, addNewTask, removeTask]}>
             {props.children}
         </TaskContext.Provider>
     );
