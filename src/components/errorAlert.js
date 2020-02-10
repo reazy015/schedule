@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import {ErrorContext} from '../contexts/errorContext';
-import {Alert} from '@material-ui/lab';
+
+import Toast from 'devextreme-react/toast';
 
 const ErrorAlert = () => {
     const [errors] = useContext(ErrorContext);
@@ -9,7 +10,7 @@ const ErrorAlert = () => {
         console.log(errors);
         return (
             <div>
-                {errors.map(error => (<Alert severity='error' className='error' key={error.id}>{error.message}</Alert>))}
+                {errors.map(error => (<Toast type='error' key={error.id}>{error.message}</Toast>))}
             </div>
         );
     }

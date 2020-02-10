@@ -1,18 +1,18 @@
 import React, {useContext} from 'react';
 import TaskCountdownTimerComponent from './taskCountdownTimerComponent';
 import {TaskContext} from '../contexts/taskContext';
-import {ConfirmationContext} from '../contexts/confimationContext';
 import {combineDateAndTime} from '../utils/getLocalISOTimeString';
+import { confirm } from 'devextreme/ui/dialog';
 
 const TaskItemComponent = ({task: {title, text, date, time, id}}) => {
     const deadline = combineDateAndTime(date, time);
-    const [tasks, ,removeTask] = useContext(TaskContext);
-    const [,callConfirmation,] = useContext(ConfirmationContext);
+    const [,,removeTask] = useContext(TaskContext);
 
     const expired = (new Date() > new Date(deadline));
 
-    const removeThisTask = () => {
-        removeTask(id);
+    const confirmationPopup = () => {
+        let result = confirm('<p>Are you sure?</p>', 'Close task');
+        result.then(answer => answer ? removeTask(id) : false);
     };
 
     return (
@@ -20,7 +20,7 @@ const TaskItemComponent = ({task: {title, text, date, time, id}}) => {
             <div className="title">{title}</div>
             <div className="text">{text}</div>
             {!expired ? (<TaskCountdownTimerComponent deadline={{date, time}} />) : (<div>Expired</div>)}
-            <button onClick={() => callConfirmation('Are you sure?', removeThisTask, true)}>Close Task</button>
+            <button onClick={() => confirmationPopup()}>Close Task</button>
         </div>
     );
 };

@@ -1,95 +1,95 @@
 import React, {useContext, useState} from 'react';
 import {TaskContext} from '../contexts/taskContext';
 import {ErrorContext} from '../contexts/errorContext';
-import DatePicker from 'react-datepicker/es';
-
-import "react-datepicker/dist/react-datepicker.css";
+import {
+    Form,
+    ButtonItem,
+    GroupItem,
+    SimpleItem,
+    Label,
+    CompareRule,
+    EmailRule,
+    PatternRule,
+    RangeRule,
+    RequiredRule,
+    StringLengthRule,
+    AsyncRule, CustomRule
+} from 'devextreme-react/form';
+import {Validator} from 'devextreme-react';
+import 'react-datepicker/dist/react-datepicker.css';
+import notify from 'devextreme/ui/notify'
 import uuid from 'uuid';
+import TextBox from 'devextreme-react/text-box';
+import {Item} from 'devextreme-react/box';
+import {DateBox, Button} from 'devextreme-react';
 
 const TaskEditComponent = () => {
     const initialState = {
         title: '',
-        text: '',
+        description: '',
         date: new Date(),
-        time: new Date(new Date().setHours(11,59))
+        time: new Date(new Date().setHours(23, 59, 59, 999))
     };
-    const [,addNewTask] = useContext(TaskContext);
-    const [,addError] = useContext(ErrorContext);
+
+    const [, addNewTask] = useContext(TaskContext);
+    const [, addError] = useContext(ErrorContext);
     const [task, setTask] = useState(initialState);
 
-    const {title, text, date, time} = task;
+    const {date} = task;
 
     const submitHandle = (e) => {
+        console.log(e);
         e.preventDefault();
         const id = uuid.v4();
         addNewTask({...task, id});
         refreshAllInputs();
     };
 
-    const onChangeHandle = (e) => {
-        console.log(e.target.value);
-        if(e.target.name === 'date') {
-            if(!e.target.value) {
-                return addError('Please enter valid date');
-            }
-        }
-
-        setTask({...task, [e.target.name]: e.target.name === 'deadline' ? new Date(e.target.value) : e.target.value});
-    };
-
-    const onDatePickerChange = (selectedDate) => {
-        console.log(selectedDate);
-        if(new Date(selectedDate) < new Date()) {
-            return addError('Date can not be earlier then todays date');
-        }
-
-        setTask({...task, date: selectedDate})
-    };
-
-    const onTimerPickerChange = (selectedTime) => {
-        if(new Date(date).toDateString() === new Date().toDateString()) {
-            if(new Date(selectedTime) < new Date()) {
-                return addError('Time can not be earlier then current time');
-            }
-        }
-
-        setTask({...task, time: selectedTime});
-    };
 
     const refreshAllInputs = () => {
         setTask(initialState);
     };
 
+    const fieldDataChangedHandler = (e) => {
+        setTask({...task, [e.dataField]: e.value});
+    };
+
+    const timeValidationHandler = (e) => {
+        if (new Date(date).toDateString() === new Date().toDateString()) {
+            if (new Date(e.value) < new Date()) {
+                notify({message: 'Invalid time, too late', type: 'error', displayTime: 1500, closeOnOutsideClick: true});
+                return false;
+            }
+        }
+        return true;
+    };
+
     return (
         <div>
             <form onSubmit={(e) => submitHandle(e)}>
-                <div className="input-group">
-                    <span>Task Title</span>
-                    <input type="text" name='title' onChange={(e) => onChangeHandle(e) } value={title}/>
-                </div>
-                <div className="input-group">
-                    <span>Task decription</span>
-                    <input type="text" name='text' onChange={onChangeHandle} value={text}/>
-                </div>
-                {/*<div className="input-group">*/}
-                {/*    <span>Task Deadline Date</span>*/}
-                {/*    <input type="date" name='date' onChange={onChangeHandle} value={date} min={date} required/>*/}
-                {/*</div>*/}
-                <div className="input-group">
-                    <DatePicker onChange={onDatePickerChange} selected={date} />
-                </div>
-                <div className="input-group">
-                    <DatePicker
-                        showTimeSelect
-                        showTimeSelectOnly
-                        timeIntervals={5}
-                        onChange={onTimerPickerChange}
-                        selected={time}
-                        timeCaption='Time'
-                        dateFormat='hh:mm a'
-                    />
-                </div>
-                <button>Add Task</button>
+                <Form formData={task} onFieldDataChanged={e => fieldDataChangedHandler(e)} showValidationSummary={true}>
+                    <GroupItem caption='Task Description'>
+                        <SimpleItem dataField='title' editorType='dxTextBox' editorOptions={{placeholder: 'Enter task title'}}>
+                            <RequiredRule message='Title is required'/>
+                        </SimpleItem>
+                        <SimpleItem dataField='description' editorType='dxTextArea' editorOptions={{placeholder: 'Enter task description'}}>
+                            <RequiredRule message='Task description is required'/>
+                        </SimpleItem>
+                    </GroupItem>
+                    <GroupItem caption='Task Due Date and Time'>
+                        <SimpleItem dataField='date' editorType='dxDateBox' editorOptions={{min: new Date()}}>
+                            <RequiredRule message='Date is required'/>
+                        </SimpleItem>
+                        <SimpleItem dataField='time' editorType='dxDateBox'
+                                    editorOptions={{type: 'time', interval: 5, pickerType: 'rollers'}}>
+                            <RequiredRule message='Time is required'/>
+                            <CustomRule type='custom' message='Time must be earlier current moment'
+                                        validationCallback={e => timeValidationHandler(e)}/>
+                        </SimpleItem>
+                    </GroupItem>
+                    <ButtonItem buttonOptions={{text: 'Add Task', type: 'success', useSubmitBehavior: true}}
+                                horizontalAlignment='left'/>
+                </Form>
             </form>
         </div>
     );
